@@ -40,6 +40,7 @@ def populate_test_database(db_name: str) -> None:
             "2 Seasons",
             "Action, Adventure, Drama",
             "Geralt of Rivia, a mutated monster-hunter for hire.",
+
         ],
         [
             "s2",
@@ -68,6 +69,7 @@ def populate_test_database(db_name: str) -> None:
             "209 min",
             "Biography, Crime, Drama",
             "An aging hitman recalls his time with the mob.",
+
         ],
         [
             "s4",
@@ -82,6 +84,7 @@ def populate_test_database(db_name: str) -> None:
             "152 min",
             "Action, Crime, Drama",
             "When the menace known as the Joker wreaks havoc.",
+
         ],
     ]
 
@@ -289,6 +292,7 @@ def test_filter_titles() -> None:
             "3 Seasons",
             "Crime, Drama, Mystery",
             "A family saga with a supernatural twist.",
+
         ],
         "Black Mirror": [
             "s4",
@@ -339,7 +343,6 @@ def test_rating_warning() -> None:
     if os.path.exists(DB_NAME):
         os.remove(DB_NAME)
     populate_test_database(DB_NAME)
-
     # Test cases
     test_cases = [
         # Suitable for kids
