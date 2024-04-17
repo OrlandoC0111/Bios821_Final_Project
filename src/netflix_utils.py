@@ -63,6 +63,7 @@ def parse_data(netflix_data: str) -> Dict[str, List[str]]:
 
     return result
 
+
 def rating_warning(netflix_db: str, movie_name: str, kid_age: int) -> str:
     """Determine if a movie is suitable for a specific aged kid to watch.
 
@@ -77,7 +78,7 @@ def rating_warning(netflix_db: str, movie_name: str, kid_age: int) -> str:
              'Sorry, your kids are not suitable for this movie'.
 
     Raises:
-        ValueError: If the kid's age is not strictly greater than 0 
+        ValueError: If the kid's age is not strictly greater than 0
         or the movie rating is not found.
     """
     # Validate input: kid's age should be strictly greater than 0
@@ -89,9 +90,9 @@ def rating_warning(netflix_db: str, movie_name: str, kid_age: int) -> str:
     cursor = conn.cursor()
 
     # Retrieve the rating of the movie from the database
-    cursor.execute("SELECT rating FROM netflix_titles "
-               "WHERE title=?", 
-               (movie_name,))
+    cursor.execute(
+        "SELECT rating FROM netflix_titles " "WHERE title=?", (movie_name,)
+    )
     row = cursor.fetchone()
     if row is None:
         raise ValueError("Movie rating not found.")
@@ -100,22 +101,29 @@ def rating_warning(netflix_db: str, movie_name: str, kid_age: int) -> str:
     rating = row[0]
 
     # Determine the minimum age for the movie based on its rating
-    if (rating == "TV-MA" or rating == "R" or rating == "NC-17"):
+    if rating == "TV-MA" or rating == "R" or rating == "NC-17":
         minimum_age = 17
     elif rating == "TV-14":
         minimum_age = 14
     elif rating == "TV-PG":
         minimum_age = 8
-    elif (rating == "G" or rating == "TV-G" or rating == "TV-Y" or 
-      rating == "TV-Y7" or rating == "TV-Y7-FV"):
+    elif (
+        rating == "G"
+        or rating == "TV-G"
+        or rating == "TV-Y"
+        or rating == "TV-Y7"
+        or rating == "TV-Y7-FV"
+    ):
         minimum_age = 0
     elif rating == "PG":
         minimum_age = 8
     elif rating == "PG-13":
         minimum_age = 13
     else:
-        raise ValueError("Unknown rating or unrated movie. "
-                     "Please check your input ratings again.")
+        raise ValueError(
+            "Unknown rating or unrated movie. "
+            "Please check your input ratings again."
+        )
 
     # Unknown or unhandled rating
 
@@ -126,6 +134,7 @@ def rating_warning(netflix_db: str, movie_name: str, kid_age: int) -> str:
         return "Look out! We suggest parental guidance."
     else:
         return "Sorry, your kids are not suitable for this movie."
+
 
 def filter_titles(
     netflix_titles: Dict[str, List[str]], **filters: Union[str, List[str]]

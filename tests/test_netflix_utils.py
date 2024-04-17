@@ -5,8 +5,7 @@ import os
 import sqlite3
 
 import pytest
-
-from netflix_utils import filter_titles, parse_data
+from netflix_utils import filter_titles, parse_data, rating_warning
 
 DB_NAME = "netflix.db"
 
@@ -40,7 +39,8 @@ def populate_test_database(db_name: str) -> None:
             "TV-MA",
             "2 Seasons",
             "Action, Adventure, Drama",
-            "Geralt of Rivia, a mutated monster-hunter for hire, journeys toward his destiny in a turbulent world where people often prove more wicked than beasts.",
+            "Geralt of Rivia, a mutated monster-hunter for hire.",
+
         ],
         [
             "s2",
@@ -54,7 +54,7 @@ def populate_test_database(db_name: str) -> None:
             "TV-14",
             "4 Seasons",
             "Drama, Fantasy, Horror",
-            "When a young boy disappears, his mother, a police chief, and his friends must confront terrifying supernatural forces in order to get him back.",
+            "When a young boy disappears, his mother, a police chief.",
         ],
         [
             "s3",
@@ -68,7 +68,8 @@ def populate_test_database(db_name: str) -> None:
             "R",
             "209 min",
             "Biography, Crime, Drama",
-            "An aging hitman recalls his time with the mob and the intersecting events with his friend, Jimmy Hoffa, through the 1950-70s.",
+            "An aging hitman recalls his time with the mob.",
+
         ],
         [
             "s4",
@@ -82,7 +83,8 @@ def populate_test_database(db_name: str) -> None:
             "PG-13",
             "152 min",
             "Action, Crime, Drama",
-            "When the menace known as the Joker wreaks havoc and chaos on the people of Gotham, Batman must accept one of the greatest psychological and physical tests of his ability to fight injustice.",
+            "When the menace known as the Joker wreaks havoc.",
+
         ],
     ]
 
@@ -153,7 +155,9 @@ def test_parse_data() -> None:
             "TV-MA",
             "2 Seasons",
             "Action, Adventure, Drama",
-            "Geralt of Rivia, a mutated monster-hunter for hire, journeys toward his destiny in a turbulent world where people often prove more wicked than beasts.",
+            "Geralt of Rivia, a mutated monster-hunter for hire, "
+            "journeys toward his destiny in a turbulent world "
+            "where people often prove more wicked than beasts.",
         ],
         [
             "s2",
@@ -167,7 +171,9 @@ def test_parse_data() -> None:
             "TV-14",
             "4 Seasons",
             "Drama, Fantasy, Horror",
-            "When a young boy disappears, his mother, a police chief, and his friends must confront terrifying supernatural forces in order to get him back.",
+            "When a young boy disappears, his mother, a police chief, and his "
+            "friends must confront terrifying supernatural forces in order"
+            " to get him back.",
         ],
         [
             "s3",
@@ -181,7 +187,8 @@ def test_parse_data() -> None:
             "R",
             "209 min",
             "Biography, Crime, Drama",
-            "An aging hitman recalls his time with the mob and the intersecting events with his friend, Jimmy Hoffa, through the 1950-70s.",
+            "An aging hitman recalls his time with the mob and intersecting"
+            "events with his friend, Jimmy Hoffa, through the 1950-70s.",
         ],
         [
             "s4",
@@ -195,7 +202,7 @@ def test_parse_data() -> None:
             "PG-13",
             "152 min",
             "Action, Crime, Drama",
-            "When the menace known as the Joker wreaks havoc and chaos on the people of Gotham, Batman must accept one of the greatest psychological and physical tests of his ability to fight injustice.",
+            "When the menace known as the Joker wreaks havoc.",
         ],
     ]
     # Write the sample data to a temporary CSV file
@@ -256,7 +263,7 @@ def test_filter_titles() -> None:
             "TV-MA",
             "2 Seasons",
             "Action, Adventure, Drama",
-            "Geralt of Rivia, a mutated monster-hunter for hire, journeys toward his destiny in a turbulent world where people often prove more wicked than beasts.",
+            "Geralt of Rivia, a mutated monster-hunter for hire.",
         ],
         "Stranger Things": [
             "s2",
@@ -270,7 +277,7 @@ def test_filter_titles() -> None:
             "TV-14",
             "4 Seasons",
             "Drama, Fantasy, Horror",
-            "When a young boy disappears, his mother, a police chief, and his friends must confront terrifying supernatural forces in order to get him back.",
+            "When a young boy disappears, his mother, a police chief.",
         ],
         "Dark": [
             "s3",
@@ -284,7 +291,8 @@ def test_filter_titles() -> None:
             "TV-MA",
             "3 Seasons",
             "Crime, Drama, Mystery",
-            "A family saga with a supernatural twist, set in a German town where the disappearance of two young children exposes the relationships among four families.",
+            "A family saga with a supernatural twist.",
+
         ],
         "Black Mirror": [
             "s4",
@@ -298,7 +306,7 @@ def test_filter_titles() -> None:
             "TV-MA",
             "5 Seasons",
             "Drama, Science Fiction, Thriller",
-            "An anthology series exploring a twisted, high-tech multiverse where humanity's greatest innovations and darkest instincts collide.",
+            "An anthology series exploring a twisted.",
         ],
     }
 
@@ -306,26 +314,28 @@ def test_filter_titles() -> None:
     filters = {"country": "United States", "rating": "TV-MA"}
     expected_output = ["The Witcher"]
     actual_output = filter_titles(netflix_titles, **filters)
-    assert (
-        actual_output == expected_output
-    ), f"Test case 1 failed: Expected {expected_output}, but got {actual_output}"
+    assert actual_output == expected_output, (
+        f"Test case 1 failed: Expected {expected_output},"
+        f"but got {actual_output}"
+    )
 
     # Test case 2: Filter by type and release_year
     filters = {"type": "TV Show", "release_year": "2016"}
     expected_output = ["Stranger Things"]
     actual_output = filter_titles(netflix_titles, **filters)
-    assert (
-        actual_output == expected_output
-    ), f"Test case 2 failed: Expected {expected_output}, but got {actual_output}"
+    assert actual_output == expected_output, (
+        f"Test case 2 failed: Expected {expected_output}, "
+        f"but got {actual_output}"
+    )
 
     # Test case 3: Filter with no matches
     filters = {"country": "France"}
     expected_output = []
     actual_output = filter_titles(netflix_titles, **filters)
-    assert (
-        actual_output == expected_output
-    ), f"Test case 3 failed: Expected {expected_output}, but got {actual_output}"
-
+    assert actual_output == expected_output, (
+        f"Test case 3 failed: Expected {expected_output},"
+        f"but got {actual_output}"
+    )
 
 
 def test_rating_warning() -> None:
@@ -333,3 +343,39 @@ def test_rating_warning() -> None:
     if os.path.exists(DB_NAME):
         os.remove(DB_NAME)
     populate_test_database(DB_NAME)
+    # Test cases
+    test_cases = [
+        # Suitable for kids
+        ("The Dark Knight", 14, "Bravo! Your kids can watch this movie!"),
+        ("Stranger Things", 16, "Bravo! Your kids can watch this movie!"),
+        # Need parental guidance
+        ("The Dark Knight", 13, "Look out! We suggest parental guidance."),
+        ("The Irishman", 17, "Look out! We suggest parental guidance."),
+        # Not suitable for kids
+        (
+            "The Irishman",
+            10,
+            "Sorry, your kids are not suitable for this movie.",
+        ),
+        (
+            "The Witcher",
+            14,
+            "Sorry, your kids are not suitable for this movie.",
+        ),
+        # Non-existent movie
+        ("Non-existent Movie", 10, ValueError),
+    ]
+
+    # Iterate through test cases
+    for movie_name, kid_age, expected_result in test_cases:
+        if expected_result == ValueError:
+            with pytest.raises(ValueError):
+                rating_warning(DB_NAME, movie_name, kid_age)
+        else:
+            assert (
+                rating_warning(DB_NAME, movie_name, kid_age) == expected_result
+            )
+
+
+if __name__ == "__main__":
+    pytest.main([__file__])
