@@ -5,7 +5,12 @@ import os
 import sqlite3
 
 import pytest
-from netflix_utils import filter_titles, parse_data, rating_warning
+from netflix_utils import (
+    common_genre,
+    filter_titles,
+    parse_data,
+    rating_warning,
+)
 
 DB_NAME = "netflix.db"
 
@@ -40,7 +45,6 @@ def populate_test_database(db_name: str) -> None:
             "2 Seasons",
             "Action, Adventure, Drama",
             "Geralt of Rivia, a mutated monster-hunter for hire.",
-
         ],
         [
             "s2",
@@ -69,7 +73,6 @@ def populate_test_database(db_name: str) -> None:
             "209 min",
             "Biography, Crime, Drama",
             "An aging hitman recalls his time with the mob.",
-
         ],
         [
             "s4",
@@ -84,7 +87,6 @@ def populate_test_database(db_name: str) -> None:
             "152 min",
             "Action, Crime, Drama",
             "When the menace known as the Joker wreaks havoc.",
-
         ],
     ]
 
@@ -292,7 +294,6 @@ def test_filter_titles() -> None:
             "3 Seasons",
             "Crime, Drama, Mystery",
             "A family saga with a supernatural twist.",
-
         ],
         "Black Mirror": [
             "s4",
@@ -375,6 +376,32 @@ def test_rating_warning() -> None:
             assert (
                 rating_warning(DB_NAME, movie_name, kid_age) == expected_result
             )
+
+
+def test_common_genre() -> None:
+    """Test common_genre function for various edge cases."""
+    if os.path.exists(DB_NAME):
+        os.remove(DB_NAME)
+    populate_test_database(DB_NAME)
+
+    # Test for the most common genres from 2015 to 2020 where genres overlap
+    expected_genres = sorted(["Drama"])
+    actual_genres = sorted(common_genre(2015, 2020, DB_NAME))
+    assert (
+        actual_genres == expected_genres
+    ), f"Expected genres {expected_genres} but got {actual_genres}."
+
+    # Test for no movies in the period from 1900 to 1901
+    with pytest.raises(ValueError) as excinfo:
+        common_genre(1900, 1901, DB_NAME)
+    assert "There are no movies released in this period" in str(excinfo.value)
+
+    # Test for invalid input where start year is greater than end year
+    with pytest.raises(ValueError) as excinfo:
+        common_genre(2021, 2020, DB_NAME)
+    assert "Start year must be earlier than or equal to end year" in str(
+        excinfo.value
+    )
 
 
 if __name__ == "__main__":

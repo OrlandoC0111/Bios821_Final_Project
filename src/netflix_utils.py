@@ -94,6 +94,7 @@ def rating_warning(netflix_db: str, movie_name: str, kid_age: int) -> str:
         "SELECT rating FROM netflix_titles " "WHERE title=?", (movie_name,)
     )
     row = cursor.fetchone()
+    conn.close()
     if row is None:
         raise ValueError("Movie rating not found.")
     # Movie not found in the database
@@ -168,3 +169,57 @@ def filter_titles(
             filtered_titles.append(title)
 
     return filtered_titles
+
+
+def common_genre(start_year: int, end_year: int, netflix_db: str) -> List[str]:
+    """Determine the most common genre in a date range.
+
+    Args:
+        start_year (int): The start year of the period to analyze.
+        end_year (int): The end year of the period to analyze.
+        netflix_db (str): Path to the SQLite database file.
+
+    Returns:
+        list[str]: The most common genre in the date range.
+
+    Raises:
+        ValueError: If start_year is greater than end_year.
+    """
+    # Connect to the SQLite database
+    conn = sqlite3.connect(netflix_db)
+    cursor = conn.cursor()
+
+    # Validate input: if start date is later than the end date.
+    if start_year > end_year:
+        raise ValueError(
+            "Start year must be earlier than or equal to end year."
+        )
+
+    # Retrieve the movies and shows from the database
+    cursor.execute(
+        """SELECT title, release_year, listed_in FROM netflix_titles"""
+    )
+    movies = cursor.fetchall()
+    conn.close()
+    if not movies:
+        raise ValueError("There are no movies released in this period")
+
+    genre_count: Dict[str, int] = {}
+    for _title, release_year, genres in movies:
+        if start_year <= int(release_year) <= end_year:
+            for genre in genres.split(", "):
+                if genre in genre_count:
+                    genre_count[genre] += 1
+                else:
+                    genre_count[genre] = 1
+
+    # Determine the most common genre
+    if not genre_count:
+        raise ValueError("There are no movies released in this period")
+
+    max_count = max(genre_count.values())
+    most_genres = [
+        genre for genre, count in genre_count.items() if count == max_count
+    ]
+
+    return most_genres
